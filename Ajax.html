@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="main"></div>
+    <script src="jQuery1.12.4.js"></script>
+    <script src="mock.js"></script>
+    <script>
+        var _HTML = '';
+        // mock假数据
+        var data = Mock.mock('http://api.com',{
+                'list|1-10': [{  //list数组名、1-10随机数，产生1-10个对象
+                    'id|+1': 1,
+                    'name': '@cname',   //中文名称
+                    'age|1-100': 100,   //100以内随机整数
+                    'birthday': '@date("yyyy-MM-dd")',  //日期
+                    'city': '@city(true)',   //中国城市
+                    'image': '@image("360x360",@color)' //图片
+
+                }]
+            });
+
+        // jQAjax
+        $(function(){
+            $.ajax({
+                url:'http://api.com',
+                dataType:'JSON'
+            }).done(function(data, status, xhr){
+                console.log(JSON.stringify(data, null, 4));
+                var rep = data.list;
+                console.log(rep);
+                // for(var i in rep){
+                //     console.log(rep[i]);
+                //     _HTML += '<ul>';
+                //     _HTML += '<ol>'+rep[i].name+'</ol>';
+                //     _HTML += '<ol>' + '<img src="'+ rep[i].image+'">' + '</ol>';
+                //     _HTML += '</ul>';
+                // }
+                for(var i=0;i<rep.length;i++){
+                    console.log(rep[i]);
+                    console.log(rep[i].image);
+                    _HTML += '<ul>';
+                    _HTML += '<ol>'+rep[i].name+'</ol>';
+                    _HTML += '<ol>' + '<img src="'+ rep[i].image+'">' + '</ol>';
+                    _HTML += '</ul>';
+                }
+                $('#main').html(_HTML);
+            });
+        });
+
+        //原生Ajax
+        function Ajax(url){
+            if(window.XMLHttpRequest){
+                ajax = new XMLHttpRequest;
+            }else if(window.ActiveXObject){
+                try {
+                    ajax = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e) {
+                    try {
+                        ajax = new ActiveXObject("Microsoft.XMLHTTP");
+                    } catch (e) { }
+                }
+            }
+            if (!ajax) {
+                window.alert("不能创建XMLHttpRequest对象实例.");
+                return false;
+            }
+            ajax.open("GET", url, true);
+            ajax.send(null);
+            // 请求的数据结果
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState == 4 && ajax.status == 200) {
+                    console.log(ajax.responseText);
+                    console.log('原生ajax请求数据' + ajax.responseText);
+                }
+            }
+        }
+        Ajax('http://api.com');
+        
+    </script>
+</body>
+</html>
